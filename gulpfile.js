@@ -5,27 +5,20 @@ var autoprefixer = require('gulp-autoprefixer')
 var browserify = require('browserify')
 var uglify = require('gulp-uglify')
 var stylus = require('gulp-stylus')
-var browserSync = require('browser-sync')
+var server = require('pushstate-server')
 var through2 = require('through2')
 var del = require('del')
-var watchify = require('watchify');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var gutil = require('gulp-util');
-var sourcemaps = require('gulp-sourcemaps');
-var assign = require('lodash').assign;
+var watchify = require('watchify')
+var source = require('vinyl-source-stream')
+var buffer = require('vinyl-buffer')
+var gutil = require('gulp-util')
+var sourcemaps = require('gulp-sourcemaps')
+var assign = require('lodash').assign
 
-gulp.task('browser-sync', function() {
-  browserSync({
-    server: {
-       baseDir: "./dist"
-    }
-  })
+gulp.task('server', function() {
+	server.start({port: 3000, directory: './dist'})
 })
 
-gulp.task('bs-reload', function () {
-  browserSync.reload()
-})
 
 gulp.task('styles', function(){
   gulp.src(['src/styles/main.styl'])
@@ -37,7 +30,6 @@ gulp.task('styles', function(){
     .pipe(stylus())
     .pipe(autoprefixer('last 2 versions'))
     .pipe(gulp.dest('dist/'))
-    .pipe(browserSync.reload({stream:true}))
 })
 
 /*
@@ -48,16 +40,16 @@ gulp.task('styles', function(){
 var customOpts = {
   entries: ['./src/scripts/main.js'],
   debug: true
-};
-var opts = assign({}, watchify.args, customOpts);
-var b = watchify(browserify(opts));
+}
+var opts = assign({}, watchify.args, customOpts)
+var b = watchify(browserify(opts))
 
 // add transformations here
-// i.e. b.transform(coffeeify);
+// i.e. b.transform(coffeeify)
 
-gulp.task('js', bundle); // so you can run `gulp js` to build the file
-b.on('update', bundle); // on any dep update, runs the bundler
-b.on('log', gutil.log); // output build logs to terminal
+gulp.task('js', bundle) // so you can run `gulp js` to build the file
+b.on('update', bundle) // on any dep update, runs the bundler
+b.on('log', gutil.log) // output build logs to terminal
 
 function bundle() {
   return b.bundle()
@@ -70,7 +62,7 @@ function bundle() {
     .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
        // Add transformation tasks to the pipeline here.
     .pipe(sourcemaps.write('./')) // writes .map file
-    .pipe(gulp.dest('./dist'));
+    .pipe(gulp.dest('./dist'))
 }
 
 gulp.task('copy-statics', function(){
@@ -84,9 +76,8 @@ gulp.task('clean', function(){
 
 gulp.task('build', ['clean', 'styles', 'js', 'copy-statics'])
 
-gulp.task('default', ['build', 'browser-sync'], function(){
+gulp.task('default', ['build', 'server'], function(){
   gulp.watch(["src/styles/*.styl", "src/styles/**/*.styl"], ['styles'])
   gulp.watch(["src/scripts/*.js", "src/scripts/**/*.js"], ['js'])
   gulp.watch(["src/assets/*", "src/assets/**/*", "src/index.html"], ['copy-statics'])
-  gulp.watch("*.html", ['bs-reload'])
 })

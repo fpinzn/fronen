@@ -27,6 +27,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.6",
     "inline-svg": "^2.0.1",
+    "jeet": "^6.1.2",
     "lodash": "^3.10.1",
     "pushstate-server": "^1.6.0",
     "through2": "^2.0.0",

@@ -15,6 +15,7 @@ var buffer = require('vinyl-buffer')
 var gutil = require('gulp-util')
 var sourcemaps = require('gulp-sourcemaps')
 var assign = require('lodash').assign
+var Karma = require('karma').Server
 
 gulp.task('server', function() {
 	server.start({port: 3000, directory: './dist'})
@@ -75,9 +76,28 @@ gulp.task('clean', function(){
   del('dist')
 })
 
+/**
+ * Run test once and exit
+ */
+gulp.task('test', function (done) {
+	new Karma({
+		configFile: __dirname + '/karma.conf.js',
+		singleRun: true
+	}, done).start();
+});
+
+/**
+ * Watch for file changes and re-run tests on each change
+ */
+gulp.task('tdd', function (done) {
+  new Karma({
+    configFile: __dirname + '/karma.conf.js'
+  }, done).start();
+});
+
 gulp.task('build', ['clean', 'styles', 'js', 'copy-statics'])
 
-gulp.task('default', ['build', 'server'], function(){
+gulp.task('default', ['build', 'server', 'tdd'], function(){
   gulp.watch(["src/styles/*.styl", "src/styles/**/*.styl"], ['styles'])
   gulp.watch(["src/scripts/*.js", "src/scripts/**/*.js"], ['js'])
   gulp.watch(["src/assets/*", "src/assets/**/*", "src/index.html"], ['copy-statics'])

@@ -1,7 +1,7 @@
 var Vivus = require('vivus')
 var d3 = require('d3')
-var textures = require('textures')
 var inlineSVG = require('inline-svg')
+var textures = require('textures')
 
 
 /*
@@ -37,3 +37,7 @@ inlineSVG.init({
      console.log('dones')
    })
 });
+
+module.exports.greet = function(name) {
+		return 'Hello, ' + name + '!'
+}

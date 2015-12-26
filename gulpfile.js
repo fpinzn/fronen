@@ -23,15 +23,15 @@ gulp.task('server', function() {
 
 
 gulp.task('styles', function(){
-  gulp.src(['src/styles/main.styl'])
-    .pipe(plumber({
-      errorHandler: function (error) {
-        console.log(error.message)
-        this.emit('end')
-    }}))
-    .pipe(stylus({use: [jeet()]}))
-    .pipe(autoprefixer('last 2 versions'))
-    .pipe(gulp.dest('dist/'))
+	gulp.src(['src/styles/main.styl'])
+	.pipe(plumber({
+		errorHandler: function (error) {
+			console.log(error.message)
+			this.emit('end')
+		}}))
+		.pipe(stylus({use: [jeet()]}))
+		.pipe(autoprefixer('last 2 versions'))
+		.pipe(gulp.dest('dist/'))
 })
 
 /*
@@ -40,8 +40,8 @@ gulp.task('styles', function(){
 
 // add custom browserify options here
 var customOpts = {
-  entries: ['./src/scripts/main.js'],
-  debug: true
+	entries: ['./src/scripts/main.js'],
+	debug: true
 }
 var opts = assign({}, watchify.args, customOpts)
 var b = watchify(browserify(opts))
@@ -54,31 +54,31 @@ b.on('update', bundle) // on any dep update, runs the bundler
 b.on('log', gutil.log) // output build logs to terminal
 
 function bundle() {
-  return b.bundle()
-    // log errors if they happen
-    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-    .pipe(source('bundle.js'))
-    // optional, remove if you don't need to buffer file contents
-    .pipe(buffer())
-    // optional, remove if you dont want sourcemaps
-    .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
-       // Add transformation tasks to the pipeline here.
-    .pipe(sourcemaps.write('./')) // writes .map file
-    .pipe(gulp.dest('./dist'))
+	return b.bundle()
+	// log errors if they happen
+	.on('error', gutil.log.bind(gutil, 'Browserify Error'))
+	.pipe(source('bundle.js'))
+	// optional, remove if you don't need to buffer file contents
+	.pipe(buffer())
+	// optional, remove if you dont want sourcemaps
+	.pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
+	// Add transformation tasks to the pipeline here.
+	.pipe(sourcemaps.write('./')) // writes .map file
+	.pipe(gulp.dest('./dist'))
 }
 
 gulp.task('copy-statics', function(){
-  gulp.src('src/index.html').pipe(gulp.dest('dist'))
-  gulp.src(['src/assets/*', 'src/assets/**/*']).pipe(gulp.dest('dist/assets'))
+	gulp.src('src/index.html').pipe(gulp.dest('dist'))
+	gulp.src(['src/assets/*', 'src/assets/**/*']).pipe(gulp.dest('dist/assets'))
 })
 
 gulp.task('clean', function(){
-  del('dist')
+	del('dist')
 })
 
 /**
- * Run test once and exit
- */
+* Run test once and exit
+*/
 gulp.task('test', function (done) {
 	new Karma({
 		configFile: __dirname + '/karma.conf.js',
@@ -87,18 +87,18 @@ gulp.task('test', function (done) {
 });
 
 /**
- * Watch for file changes and re-run tests on each change
- */
+* Watch for file changes and re-run tests on each change
+*/
 gulp.task('tdd', function (done) {
-  new Karma({
-    configFile: __dirname + '/karma.conf.js'
-  }, done).start();
+	new Karma({
+		configFile: __dirname + '/karma.conf.js'
+	}, done).start();
 });
 
 gulp.task('build', ['clean', 'styles', 'js', 'copy-statics'])
 
 gulp.task('default', ['build', 'server', 'tdd'], function(){
-  gulp.watch(["src/styles/*.styl", "src/styles/**/*.styl"], ['styles'])
-  gulp.watch(["src/scripts/*.js", "src/scripts/**/*.js"], ['js'])
-  gulp.watch(["src/assets/*", "src/assets/**/*", "src/index.html"], ['copy-statics'])
+	gulp.watch(["src/styles/*.styl", "src/styles/**/*.styl"], ['styles'])
+	gulp.watch(["src/scripts/*.js", "src/scripts/**/*.js"], ['js'])
+	gulp.watch(["src/assets/*", "src/assets/**/*", "src/index.html"], ['copy-statics'])
 })

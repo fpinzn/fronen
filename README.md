@@ -15,6 +15,9 @@ stylus for the css and gulp to put it all together.
 * Stylus
 
 
-####TODO
+#### TODO
 [ ] Cleanup gulpfile
 [ ] test building process
+
+
+### Changes

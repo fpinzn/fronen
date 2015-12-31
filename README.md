@@ -22,6 +22,7 @@ To start the developement workflow: `npm run dev`
 ## Stack
 
 * Babel (ES2015 + JSX as default presets. __Easily interchangeable via .babelrc__)
+* Standard Linter on build
 * Browserify to bundle with Watchify for faster builds
 * npm as package manager
 * Stylus

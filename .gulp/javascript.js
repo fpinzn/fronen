@@ -1,43 +1,52 @@
 'use strict'
-module.exports = javascript
+let JavaScript = {}
+module.exports = JavaScript
 
 let assign = require('lodash').assign
-	, browserify = require('browserify')
-	, babelify = require('babelify')
-	, buffer = require('vinyl-buffer')
-	, gulp = require('gulp')
-	, gutil = require('gulp-util')
-	, source = require('vinyl-source-stream')
-	, uglify = require('gulp-uglify')
-	, watchify = require('watchify')
+let browserify = require('browserify')
+let babelify = require('babelify')
+let buffer = require('vinyl-buffer')
+let gulp = require('gulp')
+let gutil = require('gulp-util')
+let source = require('vinyl-source-stream')
+let standard = require('gulp-standard')
+let uglify = require('gulp-uglify')
+let watchify = require('watchify')
 
-function javascript (src, dest, opts) {
+JavaScript.build = function (src, dest, opts) {
+  opts = assign({
+    minify: false,
+    filename: 'bundle.js',
+    callback: function () {}
+  }, opts)
+  opts['debug'] = !opts['minify']
 
-	opts = assign({
-		minify: false,
-		filename: 'bundle.js',
-		callback: function () {}
-	}, opts)
-	opts['debug'] = !opts['minify']
+  let bundler = watchify(browserify(src, opts))
+  .on('update', bundle)
+  .on('time', function (time) {})
+  .on('bytes', function (bytes) {})
+  .on('log', function (msg) {})
 
-	let bundler = watchify(browserify(src, opts))
-		.on('update', bundle)
-		.on('time', function (time) {})
-		.on('bytes', function(bytes){})
-		.on('log', function (msg){})
+  bundle()
 
-	bundle()
+  function bundle () {
+    bundler = bundler.transform(babelify).bundle()
+    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+    .pipe(source(opts.filename))
 
-	function bundle() {
+    if (opts.minify) bundler = bundler.pipe(buffer()).pipe(uglify())
 
-		bundler = bundler.transform(babelify).bundle()
-			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
-			.pipe(source(opts.filename))
+    bundler.pipe(gulp.dest(dest))
+    .on('finish', opts.callback)
+  }
 
-		if(opts.minify) bundler = bundler.pipe(buffer()).pipe(uglify())
+  return bundler
+}
 
-		bundler.pipe(gulp.dest(dest))
-			.on('finish', opts.callback)
-	}
-
+JavaScript.lint = function (srcGlob, opts) {
+  opts = assign({
+    breakOnError: false,
+    breakOnWarning: false
+  }, opts)
+  return gulp.src(srcGlob).pipe(standard()).pipe(standard.reporter('default', opts))
 }

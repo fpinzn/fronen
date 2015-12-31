@@ -1,5 +1,5 @@
 'use strict'
-/* global describe, before, it */
+/* global describe, before, it, arguments */
 
 require('mocha')
 
@@ -7,20 +7,22 @@ let assert = require('assert')
 let del = require('del')
 let fs = require('fs')
 let JS = require('../javascript')
+let intercept = require('intercept-stdout')
 let path = require('path')
+let through = require('through2')
 
-describe('javascript building and linting process', function (done) {
+function srcPath (filename) {
+  return path.join(__dirname, 'fixtures', filename)
+}
+
+function destFilePath (filename) {
+  return path.join(__dirname, 'temp', filename)
+}
+
+describe('javascript building process', function (done) {
   this.timeout(0)
 
   let destPath = path.join(__dirname, 'temp')
-
-  function srcPath (filename) {
-    return path.join(__dirname, 'fixtures', filename)
-  }
-
-  function destFilePath (filename) {
-    return path.join(__dirname, 'temp', filename)
-  }
 
   function assertMatchRegexInFileContents (regex, file, ddone, msg) {
     return function () {
@@ -67,9 +69,28 @@ describe('javascript building and linting process', function (done) {
     }
     JS.build(srcPath('react.jsx'), destPath, {minify: true, callback: noMatchCheck, filename: 'react.min.js'})
   })
+})
 
-  it('catches styling errors', function (done) {
+describe('javascript linting process', function (done) {
+  it('writes linting errors and warnings to stdout ', function (done) {
+    let stdoutput = ''
+    let unhook_intercept = intercept(function (txt) {
+      stdoutput += txt
+      return ''
+    })
     // read warnings from stdout?
-    JS.lint(srcPath('nonstandard.js')).on('finish', function () { done() })
+    JS.lint(srcPath('nonstandard.js')).on('finish', function () {
+      assert(/error/.test(stdoutput))
+      unhook_intercept()
+      done()
+    })
+  })
+
+  it('catches styling errors while using a custom reporter', function (done) {
+    let reporter = through.obj(function (obj, enc, cb) {
+      assert(obj.standard.results[0].errorCount > 0)
+      done()
+    })
+    JS.lint(srcPath('nonstandard.js'), {reporter: reporter})
   })
 })

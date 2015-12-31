@@ -21,7 +21,7 @@ To start the developement workflow: `npm run dev`
 
 ## Stack
 
-* Babel (ES2015 + JSX as default presets. __Easily interchangeable via .babelrc__)
+* Babel (ES2015 + JSX as default presets. _Easily modifiable via .babelrc_)
 * Standard Linter on build
 * Browserify to bundle with Watchify for faster builds
 * npm as package manager
@@ -49,6 +49,6 @@ There are 5 components in which gulp intervenes. Alas:
 #### TODO
 - [x] make babel work
 - [x] make browserify work with babel
-
+- [ ]
 
 ### Changes

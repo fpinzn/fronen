@@ -44,11 +44,12 @@ There are 5 components in which gulp intervenes. Alas:
 
 1. Development process. Needs on the fly compilation and testing, and a local server. Nice to have hot-swapping of code.
 2. Building Process. Needs compilation, optimization (minification, image reduction) and testing on the built files.
-
+3. Deployment (via s3)
 
 #### TODO
 - [x] make babel work
 - [x] make browserify work with babel
-- [ ]
+- [x] test js build process
+- [ ] 
 
 ### Changes

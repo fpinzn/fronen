@@ -11,7 +11,7 @@ stylus for the css and gulp to put it all together.
 
 To test the building process: `npm run test-build`
 To build the application: `npm run build`
-To start the developement workflow: `npm run dev`
+To start the development workflow: `npm run dev`
 
 ## Motivation
 
